@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+    "encoding/json"
 
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
@@ -748,8 +749,8 @@ func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitch
 }
 
 func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
-	res, err := m.Db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ? AND mentionEveryone = ?",
-		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.MentionEveryone)
+	res, err := m.Db.Exec("UPDATE twitchnotify SET channelID = ?, mentionEveryone = ? WHERE twitchUserID = ? AND guildID = ?",
+		twitchNotify.ChannelID, twitchNotify.MentionEveryone, twitchNotify.TwitchUserID, twitchNotify.GuildID)
 	if err != nil {
 		return err
 	}
@@ -781,7 +782,11 @@ func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchno
 	}
 	for rows.Next() {
 		t := new(twitchnotify.DBEntry)
-		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID)
+		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID, &t.MentionEveryone)
+		b, error := json.Marshal(t)
+		if error != nil {
+			logrus.Infof("Row: %s", b)
+		}
 		if err == nil {
 			results = append(results, t)
 		}
