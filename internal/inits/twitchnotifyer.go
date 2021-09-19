@@ -17,6 +17,7 @@ func InitTwitchNotifyWorker(container di.Container) *twitchnotify.NotifyWorker {
 	db := container.Get(static.DiDatabase).(database.Database)
 
 	if cfg.Config().TwitchApp.ClientID == "" || cfg.Config().TwitchApp.ClientSecret == "" {
+		logrus.Info("twitch app credentials are empty")
 		return nil
 	}
 
