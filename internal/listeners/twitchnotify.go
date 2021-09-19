@@ -52,7 +52,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 
 	nots, err := l.db.GetAllTwitchNotifies(u.ID)
 	if err != nil {
-		logrus.WithError(err).Fatal("Faield getting Twitch notify entries from database")
+		logrus.WithError(err).Fatal("Failed getting Twitch notify entries from database")
 		return
 	}
 
