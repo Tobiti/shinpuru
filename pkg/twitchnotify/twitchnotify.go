@@ -15,6 +15,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/generaltso/vibrant"
+	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/pkg/httpreq"
 )
 
@@ -135,6 +136,8 @@ func (w *NotifyWorker) AddUser(u *User) error {
 	if len(w.users) >= maxUserCap {
 		return ErrMaxUsersReached
 	}
+
+	logrus.Infof("Add %s to twitch notification", u.DisplayName)
 
 	w.users[u.ID] = u
 
