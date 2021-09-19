@@ -146,14 +146,9 @@ func (w *NotifyWorker) AddUser(u *User) error {
 
 // GetEmbed assembles and returns an embed reference
 // from the given Stream and User objects.
-func GetEmbed(d *Stream, u *User, everyone bool) *discordgo.MessageEmbed {
-	everyoneString := ""
-	if everyone {
-		everyoneString = "@everyone"
-	}
-
+func GetEmbed(d *Stream, u *User) *discordgo.MessageEmbed {
 	emb := &discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("%s just started streaming! %s", u.DisplayName, everyoneString),
+		Title:       fmt.Sprintf("%s just started streaming!", u.DisplayName),
 		URL:         fmt.Sprintf("https://twitch.tv/%s", u.LoginName),
 		Description: fmt.Sprintf("**%s**\n\nCurrent viewers: `%d`", d.Title, d.ViewerCount),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-    "encoding/json"
 
 	"github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/internal/models"
@@ -783,10 +782,6 @@ func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchno
 	for rows.Next() {
 		t := new(twitchnotify.DBEntry)
 		err = rows.Scan(&t.TwitchUserID, &t.GuildID, &t.ChannelID, &t.MentionEveryone)
-		b, error := json.Marshal(t)
-		if error != nil {
-			logrus.Infof("Row: %s", b)
-		}
 		if err == nil {
 			results = append(results, t)
 		}

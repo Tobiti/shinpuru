@@ -58,16 +58,31 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 
 	msgs := make([]*discordgo.Message, 0)
 	for _, not := range nots {
-		emb := twitchnotify.GetEmbed(d, u, not.MentionEveryone)
-		msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
-		if err != nil {
-			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
-				logrus.WithError(err).Fatal("Failed removing Twitch notify entry from database")
-				l.gl.Errorf(not.GuildID, "Failed removing twitch notify entry from database (%s): %s", u.ID, err.Error())
+		emb := twitchnotify.GetEmbed(d, u)
+		if not.MentionEveryone {
+			msg, err := l.session.ChannelMessageSendComplex(not.ChannelID, &discordgo.MessageSend{
+				Content: "@everyone",
+				Embed: emb,
+			})
+			if err != nil {
+				if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
+					logrus.WithError(err).Fatal("Failed removing Twitch notify entry from database")
+					l.gl.Errorf(not.GuildID, "Failed removing twitch notify entry from database (%s): %s", u.ID, err.Error())
+				}
+				return
 			}
-			return
+			msgs = append(msgs, msg)
+		} else {
+			msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
+			if err != nil {
+				if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
+					logrus.WithError(err).Fatal("Failed removing Twitch notify entry from database")
+					l.gl.Errorf(not.GuildID, "Failed removing twitch notify entry from database (%s): %s", u.ID, err.Error())
+				}
+				return
+			}
+			msgs = append(msgs, msg)
 		}
-		msgs = append(msgs, msg)
 	}
 
 	l.mx.Lock()
