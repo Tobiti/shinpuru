@@ -58,7 +58,7 @@ func (l *ListenerTwitchNotify) HandlerWentOnline(d *twitchnotify.Stream, u *twit
 
 	msgs := make([]*discordgo.Message, 0)
 	for _, not := range nots {
-		emb := twitchnotify.GetEmbed(d, u)
+		emb := twitchnotify.GetEmbed(d, u, not.MentionEveryone)
 		msg, err := l.session.ChannelMessageSendEmbed(not.ChannelID, emb)
 		if err != nil {
 			if err = l.db.DeleteTwitchNotify(u.ID, not.GuildID); err != nil {
