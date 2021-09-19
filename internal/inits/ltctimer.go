@@ -51,6 +51,7 @@ func InitLTCTimer(container di.Container) lctimer.LifeCycleTimer {
 		},
 		func() {
 			if tnw != nil {
+				logrus.Info("Check twitch notifications")
 				if err := tnw.Handle(); err != nil {
 					logrus.WithError(err).Error("LCT :: failed executing twitch notify handler")
 				}
