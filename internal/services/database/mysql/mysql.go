@@ -748,8 +748,8 @@ func (m *MysqlMiddleware) GetTwitchNotify(twitchUserID, guildID string) (*twitch
 }
 
 func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) error {
-	res, err := m.Db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ?",
-		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID)
+	res, err := m.Db.Exec("UPDATE twitchnotify SET channelID = ? WHERE twitchUserID = ? AND guildID = ? AND mentionEveryone = ?",
+		twitchNotify.ChannelID, twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.MentionEveryone)
 	if err != nil {
 		return err
 	}
@@ -758,8 +758,8 @@ func (m *MysqlMiddleware) SetTwitchNotify(twitchNotify *twitchnotify.DBEntry) er
 		return err
 	}
 	if ar == 0 {
-		_, err = m.Db.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID) VALUES (?, ?, ?)",
-			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID)
+		_, err = m.Db.Exec("INSERT INTO twitchnotify (twitchUserID, guildID, channelID, mentionEveryone) VALUES (?, ?, ?, ?)",
+			twitchNotify.TwitchUserID, twitchNotify.GuildID, twitchNotify.ChannelID, twitchNotify.MentionEveryone)
 	}
 	return err
 }
@@ -770,7 +770,7 @@ func (m *MysqlMiddleware) DeleteTwitchNotify(twitchUserID, guildID string) error
 }
 
 func (m *MysqlMiddleware) GetAllTwitchNotifies(twitchUserID string) ([]*twitchnotify.DBEntry, error) {
-	query := "SELECT twitchUserID, guildID, channelID FROM twitchnotify"
+	query := "SELECT twitchUserID, guildID, channelID, mentionEveryone FROM twitchnotify"
 	if twitchUserID != "" {
 		query += " WHERE twitchUserID = " + twitchUserID
 	}

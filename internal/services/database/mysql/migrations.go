@@ -11,6 +11,7 @@ var migrationFuncs = []migrationFunc{
 	migration_3,
 	migration_4,
 	migration_5,
+	migration_6,
 }
 
 // VERSION 0:
@@ -52,4 +53,11 @@ func migration_4(m *sql.Tx) (err error) {
 func migration_5(m *sql.Tx) (err error) {
 	return createTableColumnIfNotExists(m,
 		"reports", "`timeout` timestamp NULL DEFAULT NULL")
+}
+
+// VERSION 6:
+// - add property `mentionEveryone` to `tw`
+func migration_6(m *sql.Tx) (err error) {
+	return createTableColumnIfNotExists(m,
+		"twitchnotify", "`mentionEveryone` int(1) NOT NULL DEFAULT '0'")
 }

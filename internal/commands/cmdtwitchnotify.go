@@ -123,6 +123,37 @@ func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
 		DeleteMsgAfter: true,
 		Embed: &discordgo.MessageEmbed{
 			Color:       static.ColorEmbedDefault,
+			Description: fmt.Sprint("Do you want to mention everyone?"),
+			Thumbnail: &discordgo.MessageEmbedThumbnail{
+				URL: tUser.AviURL,
+			},
+		},
+		AcceptFunc: func(m *discordgo.Message) (err error) {
+			err = c.SendAccMsg(tUser, ctx, true);
+			return
+		},
+		DeclineFunc: func(m *discordgo.Message) (err error) {
+			err = c.SendAccMsg(tUser, ctx, false);
+			return
+		},
+	}
+
+	if _, err := accMsg.Send(ctx.GetChannel().ID); err != nil {
+		return err
+	}
+
+	return accMsg.Error()
+}
+func (c *CmdTwitchNotify) SendAccMsg(tUser *twitchnotify.User, ctx shireikan.Context, everyone bool) error {
+	tnw, _ := ctx.GetObject(static.DiTwitchNotifyWorker).(*twitchnotify.NotifyWorker)
+	db, _ := ctx.GetObject(static.DiDatabase).(database.Database)
+
+	accMsg := acceptmsg.AcceptMessage{
+		Session:        ctx.GetSession(),
+		UserID:         ctx.GetUser().ID,
+		DeleteMsgAfter: true,
+		Embed: &discordgo.MessageEmbed{
+			Color:       static.ColorEmbedDefault,
 			Description: fmt.Sprintf("Do you want to get notifications in this channel when **%s** goes online on Twitch?", tUser.DisplayName),
 			Thumbnail: &discordgo.MessageEmbedThumbnail{
 				URL: tUser.AviURL,
@@ -141,6 +172,7 @@ func (c *CmdTwitchNotify) Exec(ctx shireikan.Context) error {
 				ChannelID:    ctx.GetChannel().ID,
 				GuildID:      ctx.GetGuild().ID,
 				TwitchUserID: tUser.ID,
+				MentionEveryone: everyone,
 			})
 			if err != nil {
 				return

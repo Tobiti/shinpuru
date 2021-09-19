@@ -36,9 +36,10 @@ type Game struct {
 // DBEntry specifies a database entry for tracking
 // twitch users.
 type DBEntry struct {
-	GuildID      string
-	ChannelID    string
-	TwitchUserID string
+	GuildID         string
+	ChannelID       string
+	TwitchUserID    string
+	MentionEveryone bool
 }
 
 type usersDataWrapper struct {
